@@ -39,7 +39,7 @@ He initialization works well for networks with ReLU activations. It initializes 
 To be used when overfitting to help reduce the variance. It drives your weights `W[l]_i` to lower values.
 1. L2 Regularization
 2. Dropout
-3. Data augmentation
+3. Data augmentation (artificial data synthesis)
 4. Early stopping
 
 #### 1. L2 Regularization
@@ -68,6 +68,7 @@ During training time, divide each dropout layer by keep_prob to keep the same ex
 #### 3. Data augmentation
 Image recogn: Flip all your pictures. Randomly position/crop, rotate them.
 OCR: random rotations or distorsions.
+Another example of artificial data synthesis with merging two images such as adding a a transparent foggy image over an original image to simulate a foggy image.
 
 #### 4. Early stopping
 Advantage: no hyperparameter
@@ -268,12 +269,23 @@ Generalization of logistic regression to multiclass classification/regression
 Loss function: `L(y, y_hat) = - sum(y[j] * log(y_hat[j])) # j = 0 to C-1`
 
 ## TensorFlow
+TensorFlow is a programming framework used in deep learning.
 Writing and running programs in TensorFlow has the following steps:
-1. Create Tensors (variables) that are not yet executed/evaluated.
-2. Write operations between those Tensors.
+1. Create Tensors (Variables, Placeholders ...) that are not yet executed/evaluated.
+2. Write Operations (tf.matmul, tf.add, ...) between those Tensors.
 3. Initialize your Tensors.
 4. Create a Session.
-5. Run the Session. This will run the operations you'd written above.
+5. Run the Session. To execute the graph. (you can do it multiple times)
+
+
+Note: whatever you choose as your optimizer for the backpropagation, the backpropagation/optimization is automatically done when running the session on the "optimizer" object. (you don't need to code it again from scratch)
+
+Note2: A placeholder is an object whose value will be specify later. To specify values for a placeholder, you can pass in values by using a "feed dictionary" (feed_dict variable). See following example:
+```
+x = tf.placeholder(tf.int64, name = 'x')
+print(sess.run(2 * x, feed_dict = {x: 3}))
+sess.close()
+```
 
 # Random clarifications
 ## difference epoch_num vs iterations:
