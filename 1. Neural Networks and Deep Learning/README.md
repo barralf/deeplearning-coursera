@@ -1,23 +1,25 @@
+Quick overview of how a Neural Network works in the most general case (as possible). :)
+
 # Notations
 ## Sizes
-`m` is the number of training vectors
-`n_x` is the size of the input vector or input layer
-`n_y` is the size of the output vector or output layer
-`L` is the number of layers (thus L-1 being the number of hidden layers)
-`n[l]` is the number of neurons/units in the l-th layer (n[0]=n_x and n[L]=n_y)
+- `m` is the number of training vectors
+- `n_x` is the size of the input vector or input layer
+- `n_y` is the size of the output vector or output layer
+- `L` is the number of layers (thus L-1 being the number of hidden layers)
+- `n[l]` is the number of neurons/units in the l-th layer (n[0]=n_x and n[L]=n_y)
 
 ## Objects
-`x(i)` is the i-th input vector of shape (n_x,1)
-`y(i)` is the i-th output vector of shape (n_y,1)
-`X = [x(1) x(2).. x(m)]` of shape (n_x,m)
-`Y = [y(1) y(2).. y(m)]` of shape (n_y,m)
-`W[l]` is the weight matrix of the l-th layer and of shape (n[l],n[l-1]) (if n[l-1]=1, we use small `w[L]`)
-`b[l]` is the bias vector of the l-th layer and of shape (n[l],1)
-`z[l]` pre-activation of the l-th layer of shape (n[l],1)
-`Z[l]` pre-activation of the l-th layer of shape (n[l],m)
-`g[l]` is the activation function of the l-th layer
-`a[l]` activation of the l-th layer of shape (n[l],1)
-`A[l]` activations of the l-th layer shape (n[l],m)
+- `x(i)` is the i-th input vector of shape (n_x,1)
+- `y(i)` is the i-th output vector of shape (n_y,1)
+- `X = [x(1) x(2).. x(m)]` of shape (n_x,m)
+- `Y = [y(1) y(2).. y(m)]` of shape (n_y,m)
+- `W[l]` is the weight matrix of the l-th layer and of shape (n[l],n[l-1]) (if n[l-1]=1, we use small `w[L]`)
+- `b[l]` is the bias vector of the l-th layer and of shape (n[l],1)
+- `z[l]` pre-activation of the l-th layer of shape (n[l],1)
+- `Z[l]` pre-activation of the l-th layer of shape (n[l],m)
+- `g[l]` is the activation function of the l-th layer
+- `a[l]` activation of the l-th layer of shape (n[l],1)
+- `A[l]` activations of the l-th layer shape (n[l],m)
 
 Convention: `A[l](m)_i = A[layer](example)_entryvector`
 
@@ -70,10 +72,10 @@ dA[l-1] = W[l].T * dZ[l]
     - linear forward of layer L-1
     - activation (RELU) forward of layer L-1
     - linear forward of layer L
-    - activation (sigmoid) forward of layer L
+    - *activation (sigmoid) forward of layer L*
   - cost computation
   - backward propagation
-    - initialization backward propagation of layer L
+    - *initialization backward propagation of layer L*
     - linear backward propagation of layer L
     - activation backward propagation of layer L-1
     - ...
@@ -83,4 +85,4 @@ dA[l-1] = W[l].T * dZ[l]
 - compute accuracy of model on training & test sets  
 - predict on unknown set
 
-Note: there are functions you can compute with small L-layer deep NN (large L=O(log(n)) and small n[l]) that shallower NN would require exponentially more hidden units/neurons to compute (small L and very large n[l]=O(2^n))
+Note: there are functions you can compute with small L-layer deep NN (large `L=O(log(n)` and small `n[l]`) that shallower NN would require exponentially more hidden units/neurons to compute (small `L` and very large `n[l]=O(2^n)`)

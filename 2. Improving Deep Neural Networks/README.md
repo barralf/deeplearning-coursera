@@ -1,5 +1,4 @@
-##
-train/dev/tet :
+## Train/Dev/Test sets :
 Be sure all 3 have same distribution.
 1. Build a model upon `training set`
 2. Then try to optimize hyperparameters on `dev set` as much as possible
@@ -9,7 +8,7 @@ The trend on the ratio of splitting the models:
 - if dataset size is 100 to 1000000 ==> 60/20/20
 - if dataset size is 1000000 to INF ==> 98/1/1 or 99.5/0.4/0.1
 
-bias/variance trade-off
+Bias/variance trade-off:
 - overfitting: high bias (training set). What to do?
     - make NN bigger
     - try different model
@@ -20,10 +19,11 @@ bias/variance trade-off
     - try regularization
     - use dropout
     - try different model
-ideally: 0.5%/1%
+
+Ideal bias/variance ratio: **0.5%/1%**
 
 ## Initialization summary
--The weights `W[l]` should be initialized randomly to break symmetry
+The weights `W[l]` should be initialized randomly to **break symmetry**.
 
 The biases `b[l]` can be initialized to zeros. It is ok because symmetry is still broken so long as `W[l]` is initialized randomly.
 
@@ -37,8 +37,12 @@ He initialization works well for networks with ReLU activations. It initializes 
 
 ## Regularization summary
 To be used when overfitting to help reduce the variance. It drives your weights `W[l]_i` to lower values.
-### 1. L2 Regularization
+1. L2 Regularization
+2. Dropout
+3. Data augmentation
+4. Early stopping
 
+#### 1. L2 Regularization
 Formula:
 
 Observations:
@@ -80,7 +84,7 @@ Illustration on a simple NN: a deep NN with large number of layers, same weights
 
 Partial solution: initialization with variance (depending on activation function used)
 
-# Gradient checking with numerical approximations
+## Gradient checking with numerical approximations
 NOT for training. ONLY for debugging to see if the backward propagation is correct.
 ```
 for i in len(theta):
