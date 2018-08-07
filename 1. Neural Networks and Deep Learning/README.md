@@ -1,6 +1,6 @@
+# Neural Networks and Deep Learning: Overview & Notations
 Quick overview of how a Neural Network works in the most general case (as possible). :)
 
-# Notations
 ## Sizes
 - `m` is the number of training vectors
 - `n_x` is the size of the input vector or input layer
@@ -61,7 +61,8 @@ dA[l-1] = W[l].T * dZ[l]
 ```
 
 
-## Overview
+## How a DL algorithm really works
+Different steps in a DL algorithm:
 - choose hyperparameters (loss function, #iterations, learning rate, L, n[l], activation functions)
 - initialiaze parameters {(W[1],b[1]), ... ,(W[L],b[L])} (small values for `W` and zeros for `b`)
 - for #iterations

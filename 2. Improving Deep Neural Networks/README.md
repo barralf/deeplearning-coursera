@@ -1,4 +1,7 @@
-## Train/Dev/Test sets :
+# Improving Deep Neural Networks
+Hyperparameter tuning, Regularization and Optimization.
+
+## Train/Dev/Test sets
 Be sure all 3 have same distribution.
 1. Build a model upon `training set`
 2. Then try to optimize hyperparameters on `dev set` as much as possible
@@ -22,18 +25,22 @@ Bias/variance trade-off:
 
 Ideal bias/variance ratio: **0.5%/1%**
 
-## Initialization summary
+## Initialization of Parameters
+(⚠️ NOT hyperparameters)
+
+Possible initializations of parameters:
+- random
+- zeros
+- He initialization
+
 The weights `W[l]` should be initialized randomly to **break symmetry**.
 
 The biases `b[l]` can be initialized to zeros. It is ok because symmetry is still broken so long as `W[l]` is initialized randomly.
 
-Different initializations lead to different results
-
-Random initialization is used to break symmetry and make sure different hidden units can learn different things
-
-Don't initialize values too large
-
-He initialization works well for networks with ReLU activations. It initializes the weights to random values scaled according to a paper by He et al., 2015.
+- Different initializations lead to different results.
+- Random initialization is used to break symmetry and make sure different hidden units can learn different things
+- Don't initialize values too large
+- He initialization works well for networks with ReLU activations. It initializes the weights to random values scaled according to a paper by He et al., 2015.
 
 ## Regularization summary
 To be used when overfitting to help reduce the variance. It drives your weights `W[l]_i` to lower values.
@@ -44,6 +51,10 @@ To be used when overfitting to help reduce the variance. It drives your weights 
 
 #### 1. L2 Regularization
 Formula:
+`||W||^2 = Sum(|w[i,j]|^2) # sum of all w squared`
+`J(w,b) = (1/m) * Sum(L(y(i),y'(i))) + (lambda/2m) * Sum(|w[i]|^2)`
+
+`w[l] = (1 - (learning_rate*lambda)/m) * w[l] - learning_rate * (from back propagation)`
 
 Observations:
 `lambda` is the regularization parameter. An hyperparameter that you can tune using a dev set.
@@ -55,15 +66,19 @@ What is L2-regularization actually doing?:
 What you should remember: the implications of L2-regularization on:
 - The cost computation: A regularization term is added to the cost
 - The backpropagation function:  There are extra terms in the gradients with respect to weight matrices
-- Weights end up smaller ("weight decay"): Weights are pushed to smaller values.
+- Weights end up smaller ("weight decay"): Weights are pushed to smaller values because of new term `(1 - (learning_rate*lambda)/m) * w[l]` in updating parameters equations
+
+
 
 #### 2. Dropout
-Another regularization technique. Eliminating some neurons based on a probability.
+
+Another regularization technique. Eliminating some neurons based on a probability `keep_prob`.
 
 To be used only during training. NOT to be used during testing.
 
-Apply dropout both during forward and backward propagation.
-During training time, divide each dropout layer by keep_prob to keep the same expected value for the activations. For example, if keep_prob is 0.5, then we will on average shut down half the nodes, so the output will be scaled by 0.5 since only the remaining half are contributing to the solution. Dividing by 0.5 is equivalent to multiplying by 2. Hence, the output now has the same expected value.
+Apply dropout both during _forward and backward propagation_.
+
+During training time, divide each dropout layer by `keep_prob` to keep the same expected value for the activations. For example, if `keep_prob` is 0.5, then we will on average shut down half the nodes, so the output will be scaled by 0.5 since only the remaining half are contributing to the solution. Dividing by 0.5 is equivalent to multiplying by 2. Hence, the output now has the same expected value. --> **"Inverted dropout"**
 
 #### 3. Data augmentation
 Image recogn: Flip all your pictures. Randomly position/crop, rotate them.
@@ -107,34 +122,37 @@ Note: Don't forget to add lamda/(2m) * sum(W[l]) to J if you are using L1 or L2 
 # Optimization algorithms
 
 ## Batch vs Mini batch gradient descent
-Batch gradient descent we run the gradient descent on the whole dataset.
+- **Batch gradient descent**: we run the gradient descent on the whole dataset.
 
-Mini-Batch gradient descent we run the gradient descent on the mini datasets. Works much faster in the large datasets.
+- **Mini-Batch gradient descent**: we run the gradient descent on the mini datasets. Works much faster in the large datasets.
+
 Size:
-    (mini batch size = m) ==> Batch gradient descent
-    (mini batch size = 1) ==> Stochastic gradient descent (SGD)
-    (mini batch size = between 1 and m) ==> Mini-batch gradient descent
-Batch gradient descent:
-- too long per iteration
-Stochastic gradient descent:
-- too noisy regarding cost minimization (can be reduced by using smaller learning rate)
-- won't ever converge (reach the minimum cost)
-- lose speedup from vectorization
-Mini-batch gradient descent:
-- faster learning:
-- you have the vectorization advantage
-- make progress without waiting to process the entire training set
-- doesn't always exactly converge (can oscillate in a very small region, but you can reduce learning rate then)
-Guidelines when choosing mini-batch size:
-- For small training set (< 2000 examples) - use batch gradient descent.
-- Must be a power of 2 (because of the way computer memory is layed out and accessed): 64, 128, 256, 512, 1024, ...
-- Make sure that mini-batch fits in CPU/GPU memory.
-- Mini-batch size is a hyperparameter.
+    - (mini batch size = m) ==> _**Batch gradient descent**_
+    - (mini batch size = 1) ==> _**Stochastic gradient descent**_ (SGD)
+    - (mini batch size = between 1 and m) ==> _**Mini-batch gradient descent**_
 
-Steps: random + partition
+- Batch gradient descent:
+  - too long per iteration
+- Stochastic gradient descent:
+  - too noisy regarding cost minimization (can be reduced by using smaller learning rate)
+  - won't ever converge (reach the minimum cost)
+  - lose speedup from vectorization
+- Mini-batch gradient descent:
+  - faster learning:
+  - you have the vectorization advantage
+  - make progress without waiting to process the entire training set
+  - doesn't always exactly converge (can oscillate in a very small region, but you can reduce learning rate then)
+- Guidelines when choosing mini-batch size:
+  - For small training set (< 2000 examples) - use batch gradient descent.
+  - Must be a power of 2 (because of the way computer memory is layed out and accessed): 64, 128, 256, 512, 1024, ...
+  - Make sure that mini-batch fits in CPU/GPU memory.
+  - Mini-batch size is a hyperparameter.
+
+Steps: randomize the examples + partition
+
 Notation: `[i]{j}(k)` superscript means i-th layer, j-th minibatch, k-th example.
 ## Momentum
-```
+```python
 vdW = 0, vdb = 0
 on iteration t:
 	# can be mini-batch or batch gradient descent
@@ -146,18 +164,21 @@ on iteration t:
 	b = b - learning_rate * vdb
 ```
 
-How do you choose  `beta` ?
+How do you choose `beta`?
 
-The larger the momentum  `beta`  is, the smoother the update because the more we take the past gradients into account. But if  `beta`  is too big, it could also smooth out the updates too much.
-Common values for  `beta`  range from 0.8 to 0.999. If you don't feel inclined to tune this,  `beta=0.9`  is often a reasonable default.
-Tuning the optimal  `beta`  for your model might need trying several values to see what works best in term of reducing the value of the cost function  JJ .
+The larger the momentum `beta` is, the smoother the update because the more we take the past gradients into account. But if `beta` is too big, it could also smooth out the updates too much.
+
+Common values for `beta` range from 0.8 to 0.999. If you don't feel inclined to tune this, `beta=0.9` is often a reasonable default.
+
+Tuning the optimal `beta` for your model might need trying several values to see what works best in term of reducing the value of the cost function `J`.
+
 What you should remember:
 
-Momentum takes past gradients into account to smooth out the steps of gradient descent. It can be applied with batch gradient descent, mini-batch gradient descent or stochastic gradient descent.
-You have to tune a momentum hyperparameter `beta` and a learning rate `alpha`.
+- Momentum takes past gradients into account to smooth out the steps of gradient descent. It can be applied with batch gradient descent, mini-batch gradient descent or stochastic gradient descent.
+- You have to tune a momentum hyperparameter `beta` and a learning rate `alpha`.
 
 ## RMSprop
-```
+```python
 sdW = 0, sdb = 0
 on iteration t:
 	# can be mini-batch or batch gradient descent
@@ -170,7 +191,7 @@ on iteration t:
 
 ```
 ## ADAM
-```
+```python
 vdW = 0, vdW = 0
 sdW = 0, sdb = 0
 on iteration t:
@@ -204,7 +225,7 @@ Advantages of Adam :
 - Usually works well even with little tuning of hyperparameters (except `learning_rate` )
 
 ## Learning rate decay
-slowly reduce learning rate over during iterations so it makes it closer to the optimum because steps will be smaller and more accurate.
+Slowly reduce learning rate over during iterations so it makes it closer to the optimum because steps will be smaller and more accurate.
 
 Possible learning rate decay methods:
 - learning_rate = (1 / (1 + decay_rate * epoch_num)) * learning_rate_0
@@ -225,7 +246,7 @@ How to compute the cost function faster:
 
 # Hyperparameter tuning, Batch Normalization and Programming Frameworks
 ## Tuning process
-Hyperparameters importance are (as for Andrew Ng):
+⚠️👊 Hyperparameters importance are (as for Andrew Ng):
 - Learning rate. (more critical than other hyperparameters)
 - Momentum beta.
 - Mini-batch size.
@@ -235,19 +256,21 @@ Hyperparameters importance are (as for Andrew Ng):
 - Regularization lambda.
 - Activation functions.
 - Adam beta1 & beta2.
+
 Try random values (not grid). Use coarse to fine (zoom on small region).
 
 
 ## Tuning on logarithmic scale
 Appropriate scale is logarithmic scale
 
-Babysitting model
-Caviar model: different models in parallel if enough computational ressources !!
+1. Babysitting model: one model at a time.
+2. Caviar model: different models in parallel if enough computational ressources! 👊👊
 
 ## Batch Normalization
 Normalizing activations.
 
-`W[l]`, `b[l]` become parameters `W[l]`, `gamma[l]`, `beta[l]`
+`W[l]`, `b[l]` become parameters `W[l]`, `gamma[l]`, `beta[l]`. ⚠️ => 2 new parameters !
+
 Pseudo code:
 ```
 for t=1...NumberMiniBatches
@@ -259,17 +282,19 @@ for t=1...NumberMiniBatches
     beta[l]=beta[l]-learning_rate*dbeta[l]
     gamma[l]=gamma[l]-learning_rate*dgamma[l]
 ```
-2 new parameters
+
 ## Softmax regression
 
 Generalization of logistic regression to multiclass classification/regression
-`C`: number of classes. If `C=2`, softmax regression is actually a simple logistic regression.
-`N_y=C`
+`C`: number of classes.
 
-Loss function: `L(y, y_hat) = - sum(y[j] * log(y_hat[j])) # j = 0 to C-1`
+- If `C=2`, softmax regression is actually a simple logistic regression.
+`N_y=C`
+- Loss function: `L(y, y_hat) = - sum(y[j] * log(y_hat[j])) # j = 0 to C-1`
 
 ## TensorFlow
 TensorFlow is a programming framework used in deep learning.
+
 Writing and running programs in TensorFlow has the following steps:
 1. Create Tensors (Variables, Placeholders ...) that are not yet executed/evaluated.
 2. Write Operations (tf.matmul, tf.add, ...) between those Tensors.
@@ -278,21 +303,21 @@ Writing and running programs in TensorFlow has the following steps:
 5. Run the Session. To execute the graph. (you can do it multiple times)
 
 
-Note: whatever you choose as your optimizer for the backpropagation, the backpropagation/optimization is automatically done when running the session on the "optimizer" object. (you don't need to code it again from scratch)
+Note 1: whatever you choose as your optimizer for the backpropagation, the backpropagation/optimization is automatically done when running the session on the "optimizer" object. (you don't need to code it again from scratch)
 
-Note2: A placeholder is an object whose value will be specify later. To specify values for a placeholder, you can pass in values by using a "feed dictionary" (feed_dict variable). See following example:
-```
+Note 2: A placeholder is an object whose value will be specify later. To specify values for a placeholder, you can pass in values by using a "feed dictionary" (feed_dict variable). See following example:
+```python
 x = tf.placeholder(tf.int64, name = 'x')
 print(sess.run(2 * x, feed_dict = {x: 3}))
 sess.close()
 ```
 
 # Random clarifications
-## difference epoch_num vs iterations:
+## epoch_num vs iterations. What's the difference?
 
-Epoch: number of times the algorithm sees the entire data set. So, each time the algorithm has seen all samples in the dataset, an epoch has completed.
+- `Epoch`: number of times the algorithm sees the entire data set. So, each time the algorithm has seen all samples in the dataset, an epoch has completed.
 
-Iteration: the number of times a batch of data passed through the NN
+- `Iteration`: the number of times a batch of data passed through the NN
 
 Example of stackoverflow:
 Say you have a dataset of 10 examples. You have a batch size of 2, and you've specified you want the algorithm to run for 3 epochs.
