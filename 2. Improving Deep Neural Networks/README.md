@@ -8,16 +8,16 @@ Be sure all 3 have same distribution.
 3. Then once model is ready, evaluate the `testing set`.
 
 The trend on the ratio of splitting the models:
-- if dataset size is 100 to 1000000 ==> 60/20/20
-- if dataset size is 1000000 to INF ==> 98/1/1 or 99.5/0.4/0.1
+- if dataset size is `100` to `1000000` ==> `60/20/20`
+- if dataset size is `1000000` to `\infty` ==> `98/1/1` or `99.5/0.4/0.1`
 
-Bias/variance trade-off:
-- overfitting: high bias (training set). What to do?
+#### Bias/variance trade-off:
+- **overfitting**: _high bias_ (training set). What to do?
     - make NN bigger
     - try different model
     - try to run longer
     - try different optimization algorithms
-- underfitting: high variance (dev set). What to do?
+- **underfitting**: _high variance_ (dev set). What to do?
     - use more dataset
     - try regularization
     - use dropout
@@ -50,14 +50,17 @@ To be used when overfitting to help reduce the variance. It drives your weights 
 4. Early stopping
 
 #### 1. L2 Regularization
-Formula:
-`||W||^2 = Sum(|w[i,j]|^2) # sum of all w squared`
-`J(w,b) = (1/m) * Sum(L(y(i),y'(i))) + (lambda/2m) * Sum(|w[i]|^2)`
+Formulas:
+```
+||W||^2 = Sum(|w[i,j]|^2) # sum of all w squared
 
-`w[l] = (1 - (learning_rate*lambda)/m) * w[l] - learning_rate * (from back propagation)`
+J(w,b) = (1/m) * Sum(L(y(i),y'(i))) + (lambda/2m) * Sum(|w[i]|^2)
+
+w[l] = (1 - (learning_rate*lambda)/m) * w[l] - learning_rate * (from back propagation)
+```
 
 Observations:
-`lambda` is the regularization parameter. An hyperparameter that you can tune using a dev set.
+Hyperparameter `lambda` is the regularization parameter. You can tune it using a `dev set`.
 L2 regularization makes your decision boundary smoother. If `lambda` is too large, it is also possible to "oversmooth", resulting in a model with lower variance but high bias.
 
 What is L2-regularization actually doing?:
@@ -86,22 +89,25 @@ OCR: random rotations or distorsions.
 Another example of artificial data synthesis with merging two images such as adding a a transparent foggy image over an original image to simulate a foggy image.
 
 #### 4. Early stopping
-Advantage: no hyperparameter
-L2 regularization is better though.
+Stop when cost function on `dev test` increases.
+
+- Advantage: no hyperparameter
+- L2 regularization is better though.
 
 
 ## Normalizing
-Standard Normalization with mean and variance. Decreases drastically the computation time.
+**Standard Normalization** with mean and variance. Decreases drastically the computation time.
 
-With unormalized data, cost function can be dee with an inconsistent (elongated) shape.
+With non-normalized data, cost function can be dee with an inconsistent (elongated) shape.
 
 ## Vanishing/exploding gradients
-Illustration on a simple NN: a deep NN with large number of layers, same weights and zero biases. Makes activations and gradients explode or vanish
+As it can be seen on a very simple NN: a deep NN with large number of layers, same weights and zero biases, **activations and gradients explode or vanish**.
 
-Partial solution: initialization with variance (depending on activation function used)
+- Partial solution: **initialization with variance** (depending on activation function used)
 
 ## Gradient checking with numerical approximations
-NOT for training. ONLY for debugging to see if the backward propagation is correct.
+- **NOT for training**
+- **ONLY for debugging** to see if the backward propagation is correct.
 ```
 for i in len(theta):
   d_theta_approx[i] = (J(theta1,...,theta[i] + eps) -  J(theta1,...,theta[i] - eps)) / 2*eps
@@ -112,11 +118,11 @@ Finally we evaluate this formula
 (||d_theta_approx - d_theta||) / (||d_theta_approx||+||d_theta||) (|| - Euclidean vector norm)
 ```
 and check (with an epsilon `eps = 10^-7`):
-- if it is `< 10^-7` - great, very likely the backward propagation implementation is correct
-- if it is around `~10^-5` - can be OK, but need to inspect if there are no particularly big values in `d_theta_approx - d_theta vector`
-- if it is `>= 10^-3` - bad, probably there is a bug in backward propagation implementation
+- if `< 10^-7` - great, very likely the backward propagation implementation is correct
+- if around `~10^-5` - can be OK, but need to inspect if there are no particularly big values in `d_theta_approx - d_theta vector`
+- if `>= 10^-3` - bad, probably there is a bug in backward propagation implementation
 
-Note: Don't forget to add lamda/(2m) * sum(W[l]) to J if you are using L1 or L2 regularization.
+Note: Don't forget to add `lamda/(2m) * sum(W[l])` to J if you are using L1 or L2 regularization.
 
 ---------
 # Optimization algorithms
@@ -131,26 +137,29 @@ Size:
     - (mini batch size = 1) ==> _**Stochastic gradient descent**_ (SGD)
     - (mini batch size = between 1 and m) ==> _**Mini-batch gradient descent**_
 
-- Batch gradient descent:
+- **Batch gradient descent**:
   - too long per iteration
-- Stochastic gradient descent:
+- **Stochastic gradient descent**:
   - too noisy regarding cost minimization (can be reduced by using smaller learning rate)
   - won't ever converge (reach the minimum cost)
   - lose speedup from vectorization
-- Mini-batch gradient descent:
+- **Mini-batch gradient descent**:
   - faster learning:
   - you have the vectorization advantage
   - make progress without waiting to process the entire training set
   - doesn't always exactly converge (can oscillate in a very small region, but you can reduce learning rate then)
-- Guidelines when choosing mini-batch size:
+
+- **Guidelines** when choosing mini-batch size:
   - For small training set (< 2000 examples) - use batch gradient descent.
   - Must be a power of 2 (because of the way computer memory is layed out and accessed): 64, 128, 256, 512, 1024, ...
   - Make sure that mini-batch fits in CPU/GPU memory.
   - Mini-batch size is a hyperparameter.
 
-Steps: randomize the examples + partition
+Steps when doing mini batch:
+1. randomize the examples (X(i),Y(i))
+2. partition
 
-Notation: `[i]{j}(k)` superscript means i-th layer, j-th minibatch, k-th example.
+Notation: `[l]{j}(k)_i` superscript means l-th layer, j-th minibatch, k-th example, i-th entry vector.
 ## Momentum
 ```python
 vdW = 0, vdb = 0
@@ -296,7 +305,7 @@ Generalization of logistic regression to multiclass classification/regression
 TensorFlow is a programming framework used in deep learning.
 
 Writing and running programs in TensorFlow has the following steps:
-1. Create Tensors (Variables, Placeholders ...) that are not yet executed/evaluated.
+1. Create Tensors (Placeholders, Variables,  ...) that are not yet executed/evaluated.
 2. Write Operations (tf.matmul, tf.add, ...) between those Tensors.
 3. Initialize your Tensors.
 4. Create a Session.
