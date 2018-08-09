@@ -65,9 +65,9 @@ dA[l-1] = W[l].T * dZ[l]
 
 ## How a DL algorithm really works
 You'll get different steps in a DL algorithm 👊:
-- choose hyperparameters (loss function, #iterations, learning rate, L, n[l], activation functions)
-- initialiaze parameters {(W[1],b[1]), ... ,(W[L],b[L])} (small values for `W` and zeros for `b`)
-- for #iterations
+- **choose hyperparameters** (loss function, #iterations, learning rate, L, n[l], activation functions)
+- **initialiaze parameters** {(W[1],b[1]), ... ,(W[L],b[L])} (small values for `W` and zeros for `b`)
+- _**for #iterations**_
   - **forward propagation**
     - linear forward of layer 1
     - activation (RELU) forward of layer 1

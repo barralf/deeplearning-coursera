@@ -10,12 +10,13 @@ Three kinds of layers in a CNN:
 - `FC` Fully connected
 
 ## Convolution & edge detection example
-Concepts:
+Concepts illustrated on a simple 2D case.
 
 ## Padding
 Problems with convolutions are:
 - Shrinks output.
 - throwing away a lot of information that are in the edges.
+
 As a solution, we use padding and insert `p` rows/columns in top, bottom, left and right of the input image before convolution.
 
 
@@ -38,7 +39,7 @@ Example of a convolutional layer:
 
 ## Convolution over volumes
 `n_c`: number of filters
-`( (n+2p-f)/s + 1, (n+2p-f)/s + 1 ), n_c` matrix
+`( (n+2p-f)/s + 1, (n+2p-f)/s + 1 , n_c )` matrix
 ### Notations
 #### Hyperparameters
 
@@ -52,7 +53,7 @@ n[l] = (n[l-1] + 2p[l] - f[l] / s[l]) + 1
 #### Objects & their sizes
 ```
 Input:  (n[l-1], n[l-1], n_c[l-1])	Or	 (n_H[l-1], n_W[l-1], n_c[l-1])
-Output: (n[l], n[l], n_c[l])	Or	 (n_H[l], nW[l], n_c[l])
+Output: (n[l], n[l], n_c[l])	Or	 (n_H[l], n_W[l], n_c[l])
 
 Filters: (f[l], f[l], n_c[l-1])
 
@@ -62,10 +63,10 @@ Activations: a[l] is (n_H[l], n_W[l], n_c[l])
 Weights: (f[l], f[l], n_c[l-1], n_c[l])
 Bias:  (1, 1, 1, n_c[l])
 ```
-Parameters to train:
-- if you are using regular NN (not convolutional network): number of parameters is ` height_image * width_image * number_of_channels * number_of_neurons + number_of_neurons ` (summing weights and biases of every neuron)
+**Parameters to train**: A REVOIR
+- if you are using regular NN (not convolutional network): number of parameters is `n_[l]*n[l-1]+n[l]`(summing weights and biases of every neuron)
 - if you are using a convolutional network (not a regular NN): number of parameters is
-` height_filter * width_filter * number_of_channels * number_of_filters + number_of_filters `
+` height_filter * width_filter * number_of_channels * number_of_filters + number_of_filters ` <=> `f[l]* f[l]*n_c[l-1]|*n_c[l] + n_c[l]`
 For an input RGB image, ` number_of_channels =3`
 
 ## Pooling
@@ -73,7 +74,7 @@ The **max pooling** is if the feature is detected anywhere in this filter then k
 
 We can also use **average pooling**.
 
-**Pooling** has no parameters to learn.
+**Pooling**  reduce `n_H`, `n_W`, but not `n_C`. Also it has no parameters to learn and
 
 
 ## Why convolutions?
@@ -92,7 +93,7 @@ We learned about Conv layer, pooling layer, and fully connected layers. It turns
 Case studies on following famous Conv Nets: LeNet-5, AlexNet, and VGG.
 
 ## Residual Networks (ResNets)
-Very very deep NNs are difficult to train because of vanishing and exploding gradients problems.
+Very very deep NNs are difficult to train because of vanishing and exploding gradients problems. Fortunately Residual Networks, introduced by He et al., train much deeper networks than were previously practically feasible with normal NN also called Plain Networks.
 
 We use `skip connection` as a solution which makes you take the activation from one layer and suddenly feed it to another layer even much deeper in NN. That allows you to train large NNs even with layers greater than 100!
 
@@ -100,6 +101,7 @@ Unlike normal networks, these residual networks can go deeper without hurting th
 - **Plain Networks** - the theory tell us that if we go deeper we will get a better solution to our problem, but because of the vanishing and exploding gradients problems the performance of the network suffers as it goes deeper
 - **Residual Networks** we can go deeper as we want now.
 
+Plain deep network do not always reduce training error, that's why we need ResNet.
 
 Let's analyse following NN containing a residual block:
 `X --> Big NN --> a[l] --> Layer1 --> Layer2 --> a[l+2]`
@@ -109,10 +111,42 @@ a[l+2] = g( z[l+2] + a[l] )
 	     = g( W[l+2] a[l+1] + b[l+2] + a[l] )
 ```
 
+- identity block
+
+- convolutional block
+
 Using skip connection helps the gradient to propagate and thus help use to train much deeper networks.
+
+
+Details of thie ResNet-50 model of the assessment: are:
+
+	- Zero-padding pads the input with a pad of (3,3)
+	- Stage 1:
+		- The 2D Convolution has 64 filters of shape (7,7) and uses a stride of (2,2). Its name is "conv1".
+		- BatchNorm is applied to the channels axis of the input.
+		- MaxPooling uses a (3,3) window and a (2,2) stride.
+	- Stage 2:
+		- The convolutional block uses three set of filters of size [64,64,256], "f" is 3, "s" is 1 and the block is "a".
+		- The 2 identity blocks use three set of filters of size [64,64,256], "f" is 3 and the blocks are "b" and "c".
+	- Stage 3:
+		- The convolutional block uses three set of filters of size [128,128,512], "f" is 3, "s" is 2 and the block is "a".
+		- The 3 identity blocks use three set of filters of size [128,128,512], "f" is 3 and the blocks are "b", "c" and "d".
+	- Stage 4:
+		- The convolutional block uses three set of filters of size [256, 256, 1024], "f" is 3, "s" is 2 and the block is "a".
+		- The 5 identity blocks use three set of filters of size [256, 256, 1024], "f" is 3 and the blocks are "b", "c", "d", "e" and "f".
+	- Stage 5:
+		- The convolutional block uses three set of filters of size [512, 512, 2048], "f" is 3, "s" is 2 and the block is "a".
+		- The 2 identity blocks use three set of filters of size [512, 512, 2048], "f" is 3 and the blocks are "b" and "c".
+	- The 2D Average Pooling uses a window of shape (2,2) and its name is "avg_pool".
+	- The flatten doesn't have any hyperparameters or name.
+	- The Fully Connected (Dense) layer reduces its input to the number of classes using a softmax activation. Its name should be 'fc' + str(classes).
+
+Very deep Residual Networks are built **by stacking these blocks together**.
 
 ## Network in Network and 1 X 1 convolutions
 Replace `fully connected layers` with `1 x 1 convolutions` as Yann LeCun believes they are the same.
+
+You can use a 1x1 convolutional layer to reduce `n_C` but not `n_H`, `n_W`.
 
 
 ## Inception network motivation
@@ -134,7 +168,8 @@ When reading a paper and wanting to replicate the model, look first for an open 
 
 ## Ensembling and multi-cropping
 
-Ensembling: train several networks independently and average the outputs. Merging down some classifiers.
+**Ensembling**: train several networks independently and average the outputs. Merging down some classifiers.
+
 -------
 # Object detection
 
@@ -153,6 +188,7 @@ Note: Also Semantic Segmentation and Instance Segmentation.
 
 #### Classification with localization
 `y=[Pc, bx, by, bh, bw, C1, C2, C3, C4]`
+
 #### Loss functions
 - logistic regression for `Pc`
 - likelihood loss for `classes`
@@ -160,15 +196,16 @@ Note: Also Semantic Segmentation and Instance Segmentation.
 
 ## Landmark Detection
 If you want to output some points for instance for face recognition (corners of eyes, nose) or for skeleton detection.
+
 ## Sliding Windows
 
 ## Bounding Box & YOLO algorithm
-YOLO is a state-of-the-art object detection model that is fast and accurate
+YOLO is a **state-of-the-art object detection model** that is fast and accurate.
 
 ## Non-max Suppression
 Intersection Over Union between bouding boxes.
 
-Non-max suppression algorithm:
+**Non-max suppression algorithm**:
 1. Lets assume that we are targeting one class as an output class.
 2. Y shape should be `[Pc, bx, by, bh, bw]` Where Pc is the probability if that object occurs.
 3. Discard all boxes with `Pc < 0.6`
@@ -177,8 +214,7 @@ Non-max suppression algorithm:
 	- Select only one box when several boxes overlap with each other and detect the same class: `IoU > 0.5`
 
 
-
-If there are multiple classes/object types c you want to detect, you should run the Non-max suppression c times, once for every output class.
+If there are `c` different class/object types you want to detect, you should run the Non-max suppression `c` times, once for every output class.
 
 ## Anchor Boxes
 Specialize your algorithm to detect shapes that spans a variety of shapes covering the types of objects you seem to detect frequently.
@@ -191,7 +227,7 @@ Specialize your algorithm to detect shapes that spans a variety of shapes coveri
 Face Verification vs Face Recognition
 
 ## One short learning
-We use tau T as a threshold for d:
+We use tau `T` as a threshold for d:
 If `d( img1, img2 ) <= T` Then the faces are the same.
 
 ## Siamese networks
@@ -202,6 +238,7 @@ Siamese networks (similar to word2vec). You create embeddings vectors of your im
 - Similarity function
 
 ## Triplet Loss
+Triplet loss is one of the loss functions we can use to solve the similarity in a siamese network. (compared to gradient descent and other optimizers in a usual NN). It will train a neural network to learn an encoding of a face image.
 
 `L(A, P, N) = max (||f(A) - f(P)||^2 - ||f(A) - f(N)||^2 + alpha , 0)`
 
@@ -215,8 +252,8 @@ Neural style transfer takes a content image `C` and a style image `S` and genera
 
 ## Cost function
 
-Give a content image `C`, a style image `S`, and a generated image `G`:
-`J(G) = alpha * J(C,G) + beta * J(S,G)``
+Given a content image `C`, a style image `S`, and a generated image `G`:
+`J(G) = alpha * J(C,G) + beta * J(S,G)`
 
 ## Content cost function
 
@@ -226,32 +263,49 @@ Style is defined as correlation between activations across channels.
 The correlation of style image channels should appear in the generated image channels.
 
 
-Grim matrix
+**Grim matrix**
 
-formula
+Formula
+
+
+The style of an image can be represented using the Gram matrix of a hidden layer's activations. However, we get even better results combining this representation from multiple different layers. This is in contrast to the content representation, where usually using just a single hidden layer is sufficient.
+
+Minimizing the style cost will cause the image  GG  to follow the style of the image  S.
+
+The total cost is a linear combination of the content cost  Jcontent(C,G)Jcontent(C,G)  and the style cost  Jstyle(S,G)Jstyle(S,G)
+`alpha`  and  `beta`  are hyperparameters that control the relative weighting between content and style.
 
 Extra tips:
 
 - Steps to be made if you want to create a tensorflow model for neural style transfer:
-		- Create an Interactive Session.
-		- Load the content image.
-		- Load the style image
-		- Randomly initialize the image to be generated
-		- Load the VGG16 model
-		- Build the TensorFlow graph:
-		- Run the content image through the VGG16 model and compute the content cost
-		- Run the style image through the VGG16 model and compute the style cost
-		- Compute the total cost
-		- Define the optimizer and the learning rate
-		- Initialize the TensorFlow graph and run it for a large number of iterations, updating the generated image at every step.
+	- Create an Interactive Session.
+	- Load the content image.
+	- Load the style image
+	- Randomly initialize the image to be generated
+	- Load the VGG16 model
+	- Build the TensorFlow graph:
+	- Run the content image through the VGG16 model and compute the content cost
+	- Run the style image through the VGG16 model and compute the style cost
+	- Compute the total cost
+	- Define the optimizer and the learning rate
+	- Initialize the TensorFlow graph and run it for a large number of iterations, updating the generated image at every step.
 
+
+
+**Wrap up**:
+- Neural Style Transfer is about generating artistic images given a content image C and a style image S. All this by building a model in which the optimization algorithm updates the pixel values rather than the neural network's parameters.
+- It uses representations (hidden layer activations) based on a pretrained ConvNet.
+- The content cost function is computed using one hidden layer's activations.
+- The style cost function for one layer is computed using the Gram matrix of that layer's activations. - The overall style cost function is obtained using several hidden layers.
+- Optimizing the total cost function results in synthesizing new images.
 ## 1D & 3D Generalizations
 
 Conv nets can work with 1D and 3D data as well. Input shape has to be changed "mutatis mutandis".
 
-- 1D data comes from a lot of resources such as waves, sounds, heartbeat signals.
+- **1D data** comes from a lot of resources such as waves, sounds, heartbeat signals.
 Usually we use Recurrent Neural Network RNN for 1D data..
-- 3D data like CT scan
+- **3D data** like CT scan
 
 Random:
+
 (1) The cans are round, so that means the bounding boxes must be square, i.e. not rectangular. That removes the need to learn one of the bounding box parameters. (2) The cans are always the same size, so the algorithm doesn't need to learn a different bounding box size for every image
