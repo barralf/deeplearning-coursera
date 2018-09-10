@@ -2,12 +2,12 @@
 Hyperparameter tuning, Regularization and Optimization.
 
 ## Train/Dev/Test sets
-Be sure all 3 have same distribution.
+Verify the 3 sets have same distribution.
 1. Build a model upon `training set`
 2. Then try to optimize hyperparameters on `dev set` as much as possible
 3. Then once model is ready, evaluate the `testing set`.
 
-The trend on the ratio of splitting the models:
+Ratio of splitting the models is usually:
 - if dataset size is `100` to `1000000` ==> `60/20/20`
 - if dataset size is `1000000` to `\infty` ==> `98/1/1` or `99.5/0.4/0.1`
 
@@ -16,7 +16,7 @@ The trend on the ratio of splitting the models:
     - make NN bigger
     - try different model
     - try to run longer
-    - try different optimization algorithms
+    - try different optimization algorithms (momentum, RMSprop, Adam, etc.)
 - **underfitting**: _high variance_ (dev set). What to do?
     - use more dataset
     - try regularization
@@ -29,13 +29,13 @@ Ideal bias/variance ratio: **0.5%/1%**
 (⚠️ NOT hyperparameters)
 
 Possible initializations of parameters:
-- random
-- zeros
-- He initialization
+1. random
+2. zeros
+3. He initialization
 
 The weights `W[l]` should be initialized randomly to **break symmetry**.
 
-The biases `b[l]` can be initialized to zeros. It is ok because symmetry is still broken so long as `W[l]` is initialized randomly.
+The biases `b[l]` can be initialized to zeros because symmetry is still broken so long as `W[l]` is initialized randomly.
 
 - Different initializations lead to different results.
 - Random initialization is used to break symmetry and make sure different hidden units can learn different things
@@ -67,26 +67,30 @@ What is L2-regularization actually doing?:
 - L2-regularization relies on the assumption that a model with small weights is simpler than a model with large weights. Thus, by penalizing the square values of the weights in the cost function you drive all the weights to smaller values. It becomes too costly for the cost to have large weights! This leads to a smoother model in which the output changes more slowly as the input changes.
 
 What you should remember: the implications of L2-regularization on:
-- The cost computation: A regularization term is added to the cost
-- The backpropagation function:  There are extra terms in the gradients with respect to weight matrices
-- Weights end up smaller ("weight decay"): Weights are pushed to smaller values because of new term `(1 - (learning_rate*lambda)/m) * w[l]` in updating parameters equations
+- **Cost computation**: A regularization term is added to the cost
+- **Back propagation function**:  There are extra terms in the gradients with respect to weight matrices. Weights end up smaller ("weight decay"): weights are pushed to smaller values because of new term `(1 - (learning_rate*lambda)/m) * w[l]` in updating parameters equations
 
 
 
 #### 2. Dropout
 
-Another regularization technique. Eliminating some neurons based on a probability `keep_prob`.
+Another regularization technique.
 
-To be used only during training. NOT to be used during testing.
+To be used:
+- **only** during **training** for _forward_ and _backward propagation_.
+- **NOT** during **testing**.
 
-Apply dropout both during _forward and backward propagation_.
-
-During training time, divide each dropout layer by `keep_prob` to keep the same expected value for the activations. For example, if `keep_prob` is 0.5, then we will on average shut down half the nodes, so the output will be scaled by 0.5 since only the remaining half are contributing to the solution. Dividing by 0.5 is equivalent to multiplying by 2. Hence, the output now has the same expected value. --> **"Inverted dropout"**
+Dropout consist in 2 steps:
+- **Dropout**: Eliminating some neurons based on a probability `keep_prob`.
+- **Inverted dropout**:
+During training time, divide each dropout layer by `keep_prob` to keep the same expected value for the activations. For example, if `keep_prob` is 0.5, then we will on average shut down half the nodes, so the output will be scaled by 0.5 since only the remaining half are contributing to the solution. Dividing by 0.5 is equivalent to multiplying by 2. Hence, the output now has the same expected value.
 
 #### 3. Data augmentation
-Image recogn: Flip all your pictures. Randomly position/crop, rotate them.
-OCR: random rotations or distorsions.
-Another example of artificial data synthesis with merging two images such as adding a a transparent foggy image over an original image to simulate a foggy image.
+Synthesize artificially new data using existing data.
+
+- Image recogn: Flip all your pictures. Randomly position/crop, rotate them.
+- OCR: random rotations or distorsions.
+- Another example of artificial data synthesis with merging two images such as adding a a transparent foggy image over an original image to simulate a foggy image.
 
 #### 4. Early stopping
 Stop when cost function on `dev test` increases.
@@ -98,7 +102,7 @@ Stop when cost function on `dev test` increases.
 ## Normalizing
 **Standard Normalization** with mean and variance. Decreases drastically the computation time.
 
-With non-normalized data, cost function can be dee with an inconsistent (elongated) shape.
+With non-normalized data, cost function can be deep with an inconsistent (elongated) shape.
 
 ## Vanishing/exploding gradients
 As it can be seen on a very simple NN: a deep NN with large number of layers, same weights and zero biases, **activations and gradients explode or vanish**.

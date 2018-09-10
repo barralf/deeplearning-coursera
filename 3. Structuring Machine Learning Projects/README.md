@@ -72,5 +72,5 @@ Using **end-to-end** deep learning
 
 #### Applying end-to-end deep learning:
   - **Large amount of data available**. (Key question to ask: Do you have sufficient data to learn a function of the complexity needed to map x to y?)
-  - Use DL to learn some individual components.
+
   - **Decide clearly the mapping (X,Y)**. When applying supervised learning you should carefully choose what types of X to Y mappings you want to learn depending on what task you can get data for.

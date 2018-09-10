@@ -8,54 +8,63 @@ Note: a NN with 1 layer & 1 neuron is equivalent to a logistic regression `z = w
 - `n_x` is the size of the input vector or input layer
 - `n_y` is the size of the output vector or output layer
 - `L` is the _total number of layers_ (`L-1` would be then the _number of hidden layers_)
-- `n[l]` is the number of neurons/units in the l-th layer (n[0]=n_x and n[L]=n_y)
+- `n[l]` is the number of neurons/units in the l-th layer (`n[0]=n_x` and `n[L]=n_y`)
 
 ## Objects
-- `x(i)` is the i-th input vector of shape (n_x,1)
-- `y(i)` is the i-th output vector of shape (n_y,1)
-- `X = [x(1) x(2).. x(m)]` of shape (n_x,m)
-- `Y = [y(1) y(2).. y(m)]` of shape (n_y,m)
-- `W[l]` is the weight matrix of the l-th layer and of shape (n[l],n[l-1]) (if n[l-1]=1, we use small `w[L]`)
-- `b[l]` is the bias vector of the l-th layer and of shape (n[l],1)
-- `z[l]` pre-activation of the l-th layer of shape (n[l],1)
-- `Z[l]` pre-activation of the l-th layer of shape (n[l],m)
+- `x(i)` is the i-th input vector of shape `(n_x,1)`
+- `y(i)` is the i-th output vector of shape `(n_y,1)`
+- `X = [x(1) x(2).. x(m)]` of shape `(n_x,m)`
+- `Y = [y(1) y(2).. y(m)]` of shape `(n_y,m)`
+- `W[l]` is the weight matrix of the l-th layer and of shape `(n[l],n[l-1])` (if `n[l-1]=1`, we use small `w[L]`)
+- `b[l]` is the bias vector of the l-th layer and of shape `(n[l],1)`
+- `z[l]` pre-activation of the l-th layer of shape `(n[l],1)`
+- `Z[l]` pre-activation of the l-th layer of shape `(n[l],m)`
 - `g[l]` is the activation function of the l-th layer
-- `a[l]` activation of the l-th layer of shape (n[l],1)
-- `A[l]` activations of the l-th layer shape (n[l],m)
+- `a[l]` activation of the l-th layer of shape `(n[l],1)`
+- `A[l]` activations of the l-th layer shape `(n[l],m)`
 
 Convention: `A[l](m)_i = A[layer](example)_entryvector`
+
+Note: all notations presented here are the ones for python programs. The mathematical form in LaTeX would be: `$A^{[l](m)}_{i} = A^{[layer](example)}_{entry vector}$`
 
 ## Functions
 - Loss Function `L(y',y) = - (y*log(y') + (1-y)*log(1-y'))`
 
 - Cost Function: `J(w,b) = (1/m) * sum(L(y'[i],y[i]))`
+
 ## Equations
 Be careful to distinguish np.dot and np.multiply
-### Forward propagation
+
+### 1. Forward propagation
 2 equations after vectorization (over `n_x` and over `m`) and broadcasting (of `b`)
-1. Linear forward propagation
+
+
+1. _**Linear forward propagation**_
+
 ```
 Z[l]=W[l]A[l-1]+b[l]
 ```
-2. Activation forward propagation
+2. _**Activation forward propagation**_
+
 ```
 A[l]=g[l](Z[l])
 ```
-### Backward propagation
+### 2. Backward propagation
 1+4 equations after vectorization (over `n_x` and over `m`) and broadcasting (of `b`)
 
-1. Initialization backward propagation (that is the derivative of cost with respect to A[L])
+1. _**Initialization backward propagation**_ (that is the derivative of cost J with respect to A[L])
 ```
 dA[L] = (-(Y/A) + ((1-Y)/(1-A)))       # use np.divide
 ```
 
 and then for f in range(1,L+1)
-2. Activation backward propagation
+
+2. _**Activation backward propagation**_
 ```
 # Inputs: dA[l], caches (particularly: Z[l],W[l]) and g'[l]
 dZ[l] = dA[l] * g'[l](Z[l])             # /!\ element wise product (*) is np.multiply`
 ```
-3. Linear backward propagation
+3. _**Linear backward propagation**_
 ```
 dW[l] = 1/m dZ[l]A[l-1].T
 db[l] = 1/m np.sum(dZ[l],axis=1,keepdims=True)
@@ -65,8 +74,8 @@ dA[l-1] = W[l].T * dZ[l]
 
 ## How a DL algorithm really works
 You'll get different steps in a DL algorithm 👊:
-- **choose hyperparameters** (loss function, #iterations, learning rate, L, n[l], activation functions)
-- **initialiaze parameters** {(W[1],b[1]), ... ,(W[L],b[L])} (small values for `W` and zeros for `b`)
+- **choose hyperparameters** (loss function, #iterations, learning rate, `L`, `n[l]`, activation functions)
+- **initialize parameters to learn** : the weights matrices & bias vectors of all layers {`(W[1],b[1]), ... ,(W[L],b[L])`} (small values for `W` and zeros for `b`)
 - _**for #iterations**_
   - **forward propagation**
     - linear forward of layer 1

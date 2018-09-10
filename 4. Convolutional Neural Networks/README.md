@@ -298,6 +298,7 @@ Extra tips:
 - The content cost function is computed using one hidden layer's activations.
 - The style cost function for one layer is computed using the Gram matrix of that layer's activations. - The overall style cost function is obtained using several hidden layers.
 - Optimizing the total cost function results in synthesizing new images.
+
 ## 1D & 3D Generalizations
 
 Conv nets can work with 1D and 3D data as well. Input shape has to be changed "mutatis mutandis".
