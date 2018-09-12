@@ -74,7 +74,7 @@ dA[l-1] = W[l].T * dZ[l]
 
 ## How a DL algorithm really works
 You'll get different steps in a DL algorithm 👊:
-- **choose hyperparameters** (loss function, #iterations, learning rate, `L`, `n[l]`, activation functions)
+- **choose hyperparameters** (loss function, #iterations, optimizer and its parameters such as learning rate, `L`, `n[l]`, activation functions)
 - **initialize parameters to learn** : the weights matrices & bias vectors of all layers {`(W[1],b[1]), ... ,(W[L],b[L])`} (small values for `W` and zeros for `b`)
 - _**for #iterations**_
   - **forward propagation**

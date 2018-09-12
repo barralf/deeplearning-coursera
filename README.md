@@ -9,6 +9,7 @@ This really cool Specialization is composed of following 5 courses:
 4. [Convolutional Neural Networks](https://github.com/barralf/deeplearning-coursera/tree/master/4.%20Convolutional%20Neural%20Networks)
 5. [Sequence Models](https://github.com/barralf/deeplearning-coursera/tree/master/5.%20Sequence%20Models)
 
-Note these summaries are (still?) not exhaustive and there exists much better ones. That's why, and especially for course 5, I advise you to read the [following notes](https://github.com/mbadry1/DeepLearning.ai-Summary/tree/master/5-%20Sequence%20Models), they are really cool.
+Note these summaries are (still?😝) not exhaustive and there exists much better ones.
+That's why, and especially for course 5, I advise you to read the [following notes](https://github.com/mbadry1/DeepLearning.ai-Summary/tree/master/5-%20Sequence%20Models), they are really cool.
 
 Kudos and thank you so much Andrew Ng, Kian Katan & Younes Bensouda Mourri! 🙌😊👍
